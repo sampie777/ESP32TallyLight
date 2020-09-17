@@ -4,15 +4,17 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
-#define HOST_NAME "esp32_1"
+#define HOST_NAME "esp32_3"
 #define LED_BUILTIN 2
-#define LIGHT_PIN 22
-#define IDENT_BUTTON_PIN 23
+#define LIGHT_PIN 27
+#define IDENT_BUTTON_PIN 26
 
 const char *ssid = "trAP";
 const char *password = "H8ppeldep8p";
 
 WebServer server(80);
+
+uint8_t tallyLightStatus = LOW;
 
 void handleRoot() {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -22,14 +24,16 @@ void handleRoot() {
 
 void handleLightOn() {
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LIGHT_PIN, HIGH);
+    tallyLightStatus = HIGH;
+    digitalWrite(LIGHT_PIN, tallyLightStatus);
     server.send(200, "text/plain", "on");
     digitalWrite(LED_BUILTIN, LOW);
 }
 
 void handleLightOff() {
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LIGHT_PIN, LOW);
+    tallyLightStatus = LOW;
+    digitalWrite(LIGHT_PIN, tallyLightStatus);
     server.send(200, "text/plain", "off");
     digitalWrite(LED_BUILTIN, LOW);
 }
@@ -61,6 +65,10 @@ void handleIdent() {
     IPAddress ipAddress = WiFi.localIP();
     uint8_t lastByte = ipAddress.operator[](3);
 
+    digitalWrite(LED_BUILTIN, LOW);
+    digitalWrite(LIGHT_PIN, LOW);
+    delay(1000);
+
     for (int8_t i = 7; i >= 0; i--) {
         digitalWrite(LED_BUILTIN, HIGH);
         digitalWrite(LIGHT_PIN, HIGH);
@@ -73,6 +81,9 @@ void handleIdent() {
         digitalWrite(LIGHT_PIN, LOW);
         delay(500);
     }
+
+    delay(1000);
+    digitalWrite(LIGHT_PIN, tallyLightStatus);
 }
 
 void setupWiFi() {

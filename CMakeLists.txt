@@ -13,6 +13,7 @@ set(${CMAKE_PROJECT_NAME}_SKETCH ESP32TallyLight.ino)
 # set(mega.upload.speed 115200)
 
 include_directories(/usr/share/arduino/libraries/WiFiClient)
+include_directories(/usr/share/arduino/libraries/EEPROM)
 include_directories(/home/prive/.arduino15/packages/esp32/hardware/esp32/1.0.4/libraries)
 #include_directories(/home/prive/Arduino/libraries/Adafruit_GFX_Library)
 

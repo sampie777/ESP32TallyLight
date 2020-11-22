@@ -4,14 +4,17 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
+#include "config.h"
+#include "serial.h"
+
 #define HOST_NAME "esp32_2"
 #define LED_BUILTIN 2
 #define LIGHT_PIN 27
 #define IDENT_BUTTON_PIN 26
 #define IDENT_BUTTON_GND_PIN 33
 
-const char *ssid = "trAP";
-const char *password = "H8ppeldep8p";
+const char *ssid = Config::wifiSsidGet();
+const char *password = Config::wifiPasswordGet();
 
 WebServer server(80);
 
@@ -93,7 +96,8 @@ void setupWiFi() {
     WiFi.begin(ssid, password);
 
     // Wait for connection
-    Serial.print("Connecting to WiFi");
+    Serial.print("Connecting to WiFi: ");
+    Serial.print(ssid);
     while (WiFi.status() != WL_CONNECTED) {
         delay(1000);
         Serial.print(".");
@@ -157,6 +161,8 @@ void setup(void) {
 
 void loop(void) {
     server.handleClient();
+    SerialCom::handle();
 
     handleIdent();
+    delay(100);
 }

@@ -4,10 +4,11 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
-#define HOST_NAME "esp32_3"
+#define HOST_NAME "esp32_2"
 #define LED_BUILTIN 2
 #define LIGHT_PIN 27
 #define IDENT_BUTTON_PIN 26
+#define IDENT_BUTTON_GND_PIN 33
 
 const char *ssid = "trAP";
 const char *password = "H8ppeldep8p";
@@ -92,11 +93,15 @@ void setupWiFi() {
     WiFi.begin(ssid, password);
 
     // Wait for connection
-    Serial.println("");
+    Serial.print("Connecting to WiFi");
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
+        delay(1000);
         Serial.print(".");
+        digitalWrite(LIGHT_PIN, tallyLightStatus);
+        tallyLightStatus = !tallyLightStatus;
     }
+    tallyLightStatus = LOW;
+    digitalWrite(LIGHT_PIN, tallyLightStatus);
 
     Serial.println("");
     Serial.print("Connected to ");
@@ -129,18 +134,22 @@ void setupMDNS() {
 }
 
 void setup(void) {
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
     Serial.begin(115200);
     Serial.println("Booting...");
+
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
+
+    pinMode(LIGHT_PIN, OUTPUT);
+    digitalWrite(LIGHT_PIN, LOW);
+
+    pinMode(IDENT_BUTTON_PIN, INPUT_PULLUP);
+    pinMode(IDENT_BUTTON_GND_PIN, OUTPUT);
+    digitalWrite(IDENT_BUTTON_GND_PIN, LOW);
 
     setupWiFi();
     setupServer();
     setupMDNS();
-
-    pinMode(LIGHT_PIN, OUTPUT);
-    digitalWrite(LIGHT_PIN, LOW);
-    pinMode(IDENT_BUTTON_PIN, INPUT_PULLUP);
 
     Serial.println("Ready.");
     digitalWrite(LED_BUILTIN, LOW);

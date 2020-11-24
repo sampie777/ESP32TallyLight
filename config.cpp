@@ -86,3 +86,12 @@ const char *Config::wifiPasswordGet() {
 
     return output;
 }
+
+boolean bootIntoConfig = false;
+void Config::bootIntoConfigSet(boolean value) {
+    bootIntoConfig = value;
+}
+
+boolean Config::bootIntoConfigGet() {
+    return bootIntoConfig;
+}

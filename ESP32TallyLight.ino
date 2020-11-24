@@ -3,10 +3,12 @@
 #include <Arduino.h>
 
 #if !USING_ARDUINO
+
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+
 #endif
 
 #include "config.h"
@@ -142,6 +144,7 @@ void setupMDNS() {
     MDNS.addService("_http", "_tcp", 80);
     MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32");
 }
+
 #endif
 
 void setup(void) {
@@ -158,11 +161,18 @@ void setup(void) {
     pinMode(IDENT_BUTTON_GND_PIN, OUTPUT);
     digitalWrite(IDENT_BUTTON_GND_PIN, LOW);
 
+    // Give some time for serial to send commands
+    delay(1000);
+    SerialCom::handle();
+
+    if (!Config::bootIntoConfigGet()) {
+        Serial.println("Setting up wifi etc.");
 #if !USING_ARDUINO
-    setupWiFi();
-    setupServer();
-    setupMDNS();
+        setupWiFi();
+        setupServer();
+        setupMDNS();
 #endif
+    }
 
     Serial.println("Ready.");
     digitalWrite(LED_BUILTIN, LOW);
@@ -171,9 +181,11 @@ void setup(void) {
 void loop(void) {
     SerialCom::handle();
 
+    if (!Config::bootIntoConfigGet()) {
 #if !USING_ARDUINO
-    server.handleClient();
+        server.handleClient();
 
-    handleIdent();
+        handleIdent();
 #endif
+    }
 }

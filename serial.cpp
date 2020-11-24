@@ -18,6 +18,7 @@ void SerialCom::handle() {
     if (passwordUpdated) {
         handlePasswordUpdated();
     }
+
     if (!Serial.available()) {
         return;
     }
@@ -27,10 +28,17 @@ void SerialCom::handle() {
     flushSerialReadBuffer();
 
     if (length < SERIAL_COMMAND_LENGTH) {
+        Serial.print("[Serial] Invalid input: ");
+        Serial.write(buffer);
+        Serial.print(" [");
+        Serial.print(length);
+        Serial.println("]");
         return;
     }
 
-    if (strncmp(buffer, SERIAL_WIFI_SSID_SET, SERIAL_COMMAND_LENGTH) == 0) {
+    if (strncmp(buffer, SERIAL_BOOT_INTO_CONFIG, SERIAL_COMMAND_LENGTH) == 0) {
+        return bootIntoConfig();
+    } else if (strncmp(buffer, SERIAL_WIFI_SSID_SET, SERIAL_COMMAND_LENGTH) == 0) {
         return wifiSsidSet(buffer, length);
     } else if (strncmp(buffer, SERIAL_WIFI_SSID_GET, SERIAL_COMMAND_LENGTH) == 0) {
         return wifiSsidGet();
@@ -45,6 +53,10 @@ void SerialCom::handle() {
     Serial.print(" [");
     Serial.print(length);
     Serial.println("]");
+}
+
+void SerialCom::bootIntoConfig() {
+    Config::bootIntoConfigSet(true);
 }
 
 void SerialCom::flushSerialReadBuffer() {
@@ -89,6 +101,8 @@ void SerialCom::handleSsidUpdated() {
 
 void SerialCom::wifiSsidGet() {
     const char *value = Config::wifiSsidGet();
+    Serial.print(SERIAL_WIFI_SSID_GET);
+    Serial.print(":");
     Serial.write(value);
     Serial.print('\n');
 
@@ -131,6 +145,8 @@ void SerialCom::handlePasswordUpdated() {
 
 void SerialCom::wifiPasswordGet() {
     const char *value = Config::wifiPasswordGet();
+    Serial.print(SERIAL_WIFI_PASSWORD_GET);
+    Serial.print(":");
     Serial.write(value);
     Serial.print('\n');
 

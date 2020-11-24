@@ -19,5 +19,8 @@ namespace Config {
     void wifiPasswordSet(const char *input, uint8_t length);
 
     const char *wifiPasswordGet();
+
+    void bootIntoConfigSet(boolean value);
+    boolean bootIntoConfigGet();
 }
 #endif //ESP32TALLYLIGHT_CONFIG_H

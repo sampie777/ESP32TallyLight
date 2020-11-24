@@ -21,6 +21,7 @@
 #define SERIAL_MESSAGE_MAX_LENGTH 64
 
 // First `SERIAL_COMMAND_LENGTH` chars are the command to perform:
+#define SERIAL_BOOT_INTO_CONFIG "cnf"
 #define SERIAL_WIFI_SSID_SET "wss"
 #define SERIAL_WIFI_SSID_GET "wsg"
 #define SERIAL_WIFI_PASSWORD_SET "wps"

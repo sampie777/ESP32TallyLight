@@ -1,8 +1,13 @@
+#define USING_ARDUINO false
+
 #include <Arduino.h>
+
+#if !USING_ARDUINO
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#endif
 
 #include "config.h"
 #include "serial.h"
@@ -16,9 +21,10 @@
 const char *ssid = Config::wifiSsidGet();
 const char *password = Config::wifiPasswordGet();
 
-WebServer server(80);
-
 uint8_t tallyLightStatus = LOW;
+
+#if !USING_ARDUINO
+WebServer server(80);
 
 void handleRoot() {
     digitalWrite(LED_BUILTIN, HIGH);
@@ -136,6 +142,7 @@ void setupMDNS() {
     MDNS.addService("_http", "_tcp", 80);
     MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32");
 }
+#endif
 
 void setup(void) {
     Serial.begin(115200);
@@ -151,18 +158,22 @@ void setup(void) {
     pinMode(IDENT_BUTTON_GND_PIN, OUTPUT);
     digitalWrite(IDENT_BUTTON_GND_PIN, LOW);
 
+#if !USING_ARDUINO
     setupWiFi();
     setupServer();
     setupMDNS();
+#endif
 
     Serial.println("Ready.");
     digitalWrite(LED_BUILTIN, LOW);
 }
 
 void loop(void) {
-    server.handleClient();
     SerialCom::handle();
 
+#if !USING_ARDUINO
+    server.handleClient();
+
     handleIdent();
-    delay(100);
+#endif
 }

@@ -21,6 +21,10 @@ namespace SerialCom {
     void wifiPasswordSet(const char *buffer, uint8_t length);
 
     void wifiPasswordGet();
+
+    void handleSsidUpdated();
+
+    void handlePasswordUpdated();
 }
 
 #endif //ESP32TALLYLIGHT_SERIAL_H

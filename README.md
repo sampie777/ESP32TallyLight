@@ -30,3 +30,13 @@ Assuming the IP is 192.168.178.10, the Tally Light will flash (10 (dec) => `0000
 | short | 0 |
 | long | 1 |
 | short | 0 |
+
+## Pins
+
+| Pin | Description |
+| --- | --- |
+| 27 | Tally Light LED's transistor/mosfet |
+| 26 | Ident-Button |
+| 33 | Ident-Button ground, or just use the normal GND pin |
+
+These values, including hostname, can be edited in [ESP32TallyLight.ino](ESP32TallyLight.ino). Here you can also hardcode WiFi credentials if you want.

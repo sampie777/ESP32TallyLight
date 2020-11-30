@@ -36,7 +36,9 @@ void SerialCom::handle() {
         return;
     }
 
-    if (strncmp(buffer, SERIAL_BOOT_INTO_CONFIG, SERIAL_COMMAND_LENGTH) == 0) {
+    if (strncmp(buffer, SERIAL_RESTART, SERIAL_COMMAND_LENGTH) == 0) {
+        return restart();
+    } else if (strncmp(buffer, SERIAL_BOOT_INTO_CONFIG, SERIAL_COMMAND_LENGTH) == 0) {
         return bootIntoConfig();
     } else if (strncmp(buffer, SERIAL_WIFI_SSID_SET, SERIAL_COMMAND_LENGTH) == 0) {
         return wifiSsidSet(buffer, length);
@@ -53,6 +55,11 @@ void SerialCom::handle() {
     Serial.print(" [");
     Serial.print(length);
     Serial.println("]");
+}
+
+void SerialCom::restart() {
+    Serial.println("[Serial] Rebooting");
+    ESP.restart();
 }
 
 void SerialCom::bootIntoConfig() {

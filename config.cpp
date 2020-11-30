@@ -4,6 +4,19 @@
 
 #include "config.h"
 
+void Config::setup() {
+    EEPROM.begin(EEPROM_SIZE);
+}
+
+void EEPROMupdate(const int address, const char value) {
+    if (EEPROM.read(address) == (uint8_t) value) {
+        return;
+    }
+
+    EEPROM.write(address, value);
+    EEPROM.commit();
+}
+
 void Config::wifiSsidSet(const char *input, uint8_t length) {
     // Debug
     Serial.print("[Config] Set Wifi Ssid = ");
@@ -12,13 +25,13 @@ void Config::wifiSsidSet(const char *input, uint8_t length) {
     Serial.print(length);
     Serial.println("]");
 
-    EEPROM.update(EEPROM_WIFI_SSID_ADDRESS, length);
+    EEPROMupdate(EEPROM_WIFI_SSID_ADDRESS, length);
 
     for (int i = 0;
          i < length && (EEPROM_WIFI_SSID_ADDRESS + 1 + i) < EEPROM_WIFI_PASSWORD_ADDRESS;
          i++) {
 
-        EEPROM.update(EEPROM_WIFI_SSID_ADDRESS + 1 + i, input[i]);
+        EEPROMupdate(EEPROM_WIFI_SSID_ADDRESS + 1 + i, input[i]);
     }
 }
 
@@ -49,16 +62,16 @@ const char *Config::wifiSsidGet() {
 
 void Config::wifiPasswordSet(const char *input, const uint8_t length) {
     // Debug
-    Serial.print("[Config] Get Wifi password = ");
+    Serial.print("[Config] Set Wifi password = ");
     Serial.write(input);
     Serial.print(" [");
     Serial.print(length);
     Serial.println("]");
 
-    EEPROM.update(EEPROM_WIFI_PASSWORD_ADDRESS, length);
+    EEPROMupdate(EEPROM_WIFI_PASSWORD_ADDRESS, length);
 
     for (int i = 0; i < length; i++) {
-        EEPROM.update(EEPROM_WIFI_PASSWORD_ADDRESS + 1 + i, input[i]);
+        EEPROMupdate(EEPROM_WIFI_PASSWORD_ADDRESS + 1 + i, input[i]);
     }
 }
 
@@ -88,6 +101,7 @@ const char *Config::wifiPasswordGet() {
 }
 
 boolean bootIntoConfig = false;
+
 void Config::bootIntoConfigSet(boolean value) {
     bootIntoConfig = value;
 }

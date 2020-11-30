@@ -20,9 +20,6 @@
 #define IDENT_BUTTON_PIN 26
 #define IDENT_BUTTON_GND_PIN 33
 
-const char *ssid = Config::wifiSsidGet();
-const char *password = Config::wifiPasswordGet();
-
 uint8_t tallyLightStatus = LOW;
 
 #if !USING_ARDUINO
@@ -99,6 +96,9 @@ void handleIdent() {
 }
 
 void setupWiFi() {
+    const char *ssid = Config::wifiSsidGet();
+    const char *password = Config::wifiPasswordGet();
+
     WiFi.mode(WIFI_STA);
     WiFi.setHostname(HOST_NAME);
     WiFi.begin(ssid, password);
@@ -107,6 +107,8 @@ void setupWiFi() {
     Serial.print("Connecting to WiFi: ");
     Serial.print(ssid);
     while (WiFi.status() != WL_CONNECTED) {
+        SerialCom::handle();
+
         delay(1000);
         Serial.print(".");
         digitalWrite(LIGHT_PIN, tallyLightStatus);
@@ -160,6 +162,8 @@ void setup(void) {
     pinMode(IDENT_BUTTON_PIN, INPUT_PULLUP);
     pinMode(IDENT_BUTTON_GND_PIN, OUTPUT);
     digitalWrite(IDENT_BUTTON_GND_PIN, LOW);
+
+    Config::setup();
 
     // Give some time for serial to send commands
     delay(1000);

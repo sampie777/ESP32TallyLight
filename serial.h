@@ -27,6 +27,8 @@ namespace SerialCom {
     void handlePasswordUpdated();
 
     void bootIntoConfig();
+
+    void restart();
 }
 
 #endif //ESP32TALLYLIGHT_SERIAL_H
